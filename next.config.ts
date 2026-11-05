@@ -1,16 +1,11 @@
 import type { NextConfig } from "next";
 
+process.env.TZ = process.env.TZ || "Asia/Kolkata";
+
 const nextConfig: NextConfig = {
-  /* config options here */
-  cacheComponents: true,
-  partialPrefetching: true,
-  turbopack: {
-    rules: {
-      "*.css": {
-        loaders: ["@tailwindcss/turbopack"],
-        as: "*.css",
-      },
-    },
+  reactStrictMode: true,
+  experimental: {
+    serverActions: { bodySizeLimit: "10mb" }, // backup restore uploads
   },
 };
 
