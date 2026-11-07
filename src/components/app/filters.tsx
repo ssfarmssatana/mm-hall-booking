@@ -4,6 +4,7 @@ import { useRouter, usePathname, useSearchParams } from "next/navigation";
 import { Input, Select } from "@/components/ui/field";
 import type { Hall } from "@/lib/types";
 import { useTransition } from "react";
+import { localISO } from "@/lib/format";
 
 /** Shared date-range / hall / basis filter bar. Values live in the URL so pages are shareable & server-rendered. */
 export function RangeFilters({ halls, from, to, hall, basis, showBasis = true }: { halls: Hall[]; from: string; to: string; hall: string; basis?: string; showBasis?: boolean }) {
@@ -25,8 +26,8 @@ export function RangeFilters({ halls, from, to, hall, basis, showBasis = true }:
     else if (days === "fy") { const y = now.getMonth() >= 3 ? now.getFullYear() : now.getFullYear() - 1; f = new Date(y, 3, 1); t = new Date(y + 1, 2, 31); }
     else f = new Date(now.getTime() - days * 86400e3);
     const p = new URLSearchParams(sp.toString());
-    p.set("from", f.toISOString().slice(0, 10));
-    p.set("to", t.toISOString().slice(0, 10));
+    p.set("from", localISO(f));
+    p.set("to", localISO(t));
     start(() => router.replace(`${pathname}?${p.toString()}`));
   };
 

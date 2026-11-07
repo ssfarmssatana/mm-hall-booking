@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getHalls, getProfiles, getSession, getSettings } from "@/lib/data";
-import { fmtDate, fmtDateTime, inr } from "@/lib/format";
+import { fmtDate, fmtDateTime, inr, todayISO } from "@/lib/format";
 import { LABELS, type Enquiry, type EnquiryFollowup } from "@/lib/types";
 import { PageHeader } from "@/components/app/page-header";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -51,7 +51,7 @@ export default async function EnquiryDetail({ params }: { params: Promise<{ id: 
         <div className="mb-4 rounded-md border border-danger/40 bg-danger-soft px-4 py-2 text-sm text-danger">Marked lost — {enq.lost_reason}</div>
       )}
       {enq.status !== "booked" && enq.status !== "lost" && enq.next_follow_up && (
-        <div className={`mb-4 rounded-md border px-4 py-2 text-sm ${enq.next_follow_up < new Date().toISOString().slice(0, 10) ? "border-danger/40 bg-danger-soft text-danger" : "border-warn/40 bg-warn-soft text-warn"}`}>
+        <div className={`mb-4 rounded-md border px-4 py-2 text-sm ${enq.next_follow_up < todayISO() ? "border-danger/40 bg-danger-soft text-danger" : "border-warn/40 bg-warn-soft text-warn"}`}>
           Next follow-up: {fmtDate(enq.next_follow_up, "EEEE, dd MMM yyyy")}
         </div>
       )}

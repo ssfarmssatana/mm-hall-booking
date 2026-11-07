@@ -18,13 +18,14 @@ Bookings (full register fields, auto numbers continuing from the paper register,
 member discount, extra charges, tentative holds with expiry, reschedule keeping original slot, cancellation with
 charge and refund calculation, database-enforced double-booking guard incl. setup/cleaning buffer) ·
 Payments (instalments, deposits kept separate, receipt numbers, due dates, overdue list) · Reports (monthly
-enquiry/conversion table as in the Mandal's PDF, lost reasons, sources, CSV exports) · Printable
+enquiry/conversion table as in the Mandal's PDF, interactive charts, lost reasons, sources, formatted multi-sheet
+Excel workbook, print-ready PDF report, CSV exports) · Printable
 quotation / confirmation / receipt (English + Marathi) · Roles: staff / accounts / admin · Audit trail of every
 change · In-app notifications · Manual + nightly backups with restore.
 
 ## 1. Database (Supabase)
 1. Supabase → **SQL Editor** → paste and run, in order:
-   `supabase/migrations/0001_schema.sql`, then `0002_seed.sql`
+   `supabase/migrations/0001_schema.sql`, then `0002_seed.sql`, then `0004_reports.sql`
    (edit hall names / rates / last register numbers in `0002_seed.sql` first if you know them).
 2. **Authentication → Users → Add user → Create new user**: admin's email + password, *Auto Confirm User* ON.
 3. Put that email into `supabase/migrations/0003_make_admin.sql` and run it.

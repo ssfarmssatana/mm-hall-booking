@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { getHalls, getSession } from "@/lib/data";
-import { inr, fmtDate, fmtRange, todayISO } from "@/lib/format";
+import { inr, fmtDate, fmtRange, todayISO, localISO } from "@/lib/format";
 import type { DashboardStats } from "@/lib/types";
 import { PageHeader } from "@/components/app/page-header";
 import { RangeFilters } from "@/components/app/filters";
@@ -8,12 +8,13 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { BookingStatusBadge } from "@/components/ui/status-badge";
 import { Plus } from "lucide-react";
+import { TrendLine, type MonthRow } from "@/components/app/charts";
 
 export const metadata = { title: "Dashboard" };
 
 function defaultRange() {
   const now = new Date();
-  return { from: new Date(now.getFullYear(), now.getMonth(), 1).toISOString().slice(0, 10), to: todayISO() };
+  return { from: localISO(new Date(now.getFullYear(), now.getMonth(), 1)), to: todayISO() };
 }
 
 export default async function DashboardPage({ searchParams }: { searchParams: Promise<Record<string, string>> }) {
@@ -24,13 +25,16 @@ export default async function DashboardPage({ searchParams }: { searchParams: Pr
   const halls = await getHalls();
   const today = todayISO();
 
-  const [statsRes, fu, exp, upcoming, dues] = await Promise.all([
+  const sixMonthsAgo = localISO(new Date(new Date().getFullYear(), new Date().getMonth() - 5, 1));
+  const [statsRes, fu, exp, upcoming, dues, trend] = await Promise.all([
     supabase.rpc("dashboard_stats", { p_from: from, p_to: to, p_hall: hall ? Number(hall) : null, p_basis: basis }),
     supabase.from("enquiries").select("id,enquiry_no,customer_name,mobile,next_follow_up,programme_type,event_date").in("status", ["new", "follow_up"]).lte("next_follow_up", today).order("next_follow_up").limit(10),
     supabase.from("bookings").select("id,booking_no,customer_name,tentative_expires_at,start_at").eq("status", "tentative").order("tentative_expires_at").limit(8),
     supabase.from("bookings").select("id,booking_no,customer_name,start_at,end_at,status,programme_type,hall_id").in("status", ["confirmed", "tentative"]).gte("end_at", new Date().toISOString()).order("start_at").limit(8),
     supabase.from("payment_dues").select("id,booking_id,due_date,amount,bookings(booking_no,customer_name)").eq("settled", false).lte("due_date", today).order("due_date").limit(8),
+    supabase.rpc("monthly_report", { p_from: sixMonthsAgo, p_to: today, p_hall: hall ? Number(hall) : null }),
   ]);
+  const trendRows = ((trend.data ?? []) as MonthRow[]).map((m) => ({ ...m, enquiries: Number(m.enquiries), bookings_confirmed: Number(m.bookings_confirmed) }));
   const s = (statsRes.data ?? {}) as DashboardStats;
   const hallName = (id: number) => halls.find((h) => h.id === id)?.name ?? "";
 
@@ -63,7 +67,12 @@ export default async function DashboardPage({ searchParams }: { searchParams: Pr
         ))}
       </div>
 
-      <div className="mt-5 grid gap-4 lg:grid-cols-2">
+      <Card className="mt-4">
+        <CardHeader><CardTitle>Last 6 months: enquiries vs confirmed bookings</CardTitle><Link href="/reports" className="text-xs text-accent">Full reports</Link></CardHeader>
+        <CardContent className="pt-2"><TrendLine data={trendRows} /></CardContent>
+      </Card>
+
+      <div className="mt-4 grid gap-4 lg:grid-cols-2">
         <Card>
           <CardHeader><CardTitle>Follow-ups due</CardTitle><Link href="/enquiries?status=follow_up" className="text-xs text-accent">All enquiries</Link></CardHeader>
           <CardContent className="p-0">

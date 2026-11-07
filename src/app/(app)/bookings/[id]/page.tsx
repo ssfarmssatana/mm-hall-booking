@@ -2,7 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Printer } from "lucide-react";
 import { getHalls, getProfiles, getSession, getSettings, can } from "@/lib/data";
-import { fmtDate, fmtDateTime, fmtRange, inr } from "@/lib/format";
+import { fmtDate, fmtDateTime, fmtRange, inr, todayISO } from "@/lib/format";
 import { LABELS, type AuditEntry, type Booking, type BookingCharge, type BookingFinancials, type Payment, type PaymentDue } from "@/lib/types";
 import { PageHeader } from "@/components/app/page-header";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -116,7 +116,7 @@ export default async function BookingDetail({ params }: { params: Promise<{ id: 
             {!dues?.length && <p className="px-4 py-4 text-center text-xs text-muted">No instalment dates set.</p>}
             <ul className="divide-y divide-line text-sm">
               {(dues as PaymentDue[] | null)?.map((d) => {
-                const overdue = !d.settled && d.due_date < new Date().toISOString().slice(0, 10);
+                const overdue = !d.settled && d.due_date < todayISO();
                 return (
                   <li key={d.id} className="flex items-center gap-3 px-4 py-2">
                     <DueActions bookingId={bid} canEdit={isAccounts} due={d} />

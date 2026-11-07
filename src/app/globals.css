@@ -90,8 +90,10 @@ textarea.field { min-height: 80px; }
 .rbc-current-time-indicator { background: var(--accent); }
 .rbc-agenda-table th, .rbc-agenda-table td { border-color: var(--line) !important; font-size: 14px; }
 
+@page { size: A4; margin: 12mm; }
 @media print {
   body { background: #fff; }
+  .recharts-responsive-container { width: 100% !important; }
   .no-print { display: none !important; }
   .print-page { box-shadow: none !important; border: none !important; margin: 0 !important; padding: 0 !important; max-width: none !important; }
 }

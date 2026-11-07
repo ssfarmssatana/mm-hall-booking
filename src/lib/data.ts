@@ -2,6 +2,7 @@ import { cache } from "react";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import type { Hall, Profile, Settings } from "@/lib/types";
+import { todayISO } from "@/lib/format";
 
 /** Current user + profile, cached per request. Redirects to /login if missing. */
 export const getSession = cache(async () => {
@@ -54,7 +55,7 @@ export interface Notification {
 /** In-app notifications – computed live, nothing stored, nothing sent. */
 export const getNotifications = cache(async (): Promise<Notification[]> => {
   const { supabase } = await getSession();
-  const today = new Date().toISOString().slice(0, 10);
+  const today = todayISO();
   const in24h = new Date(Date.now() + 24 * 3600e3).toISOString();
   const in7d = new Date(Date.now() + 7 * 86400e3).toISOString();
 

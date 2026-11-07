@@ -3,7 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { getSession, can } from "@/lib/data";
-import { toISO } from "@/lib/format";
+import { toISO, todayISO } from "@/lib/format";
 import { friendlyDbError } from "@/lib/errors";
 import type { ActionState } from "../enquiries/actions";
 
@@ -38,7 +38,7 @@ function parseBooking(fd: FormData) {
       programme_type: opt(fd.get("programme_type")),
       expected_guests: opt(fd.get("expected_guests")) ? n(fd.get("expected_guests")) : null,
       start_at, end_at,
-      booking_date: str(fd.get("booking_date")) || new Date().toISOString().slice(0, 10),
+      booking_date: str(fd.get("booking_date")) || todayISO(),
       hall_charges: n(fd.get("hall_charges")),
       member_discount: n(fd.get("member_discount")),
       gst_rate: n(fd.get("gst_rate")),
@@ -149,7 +149,7 @@ export async function addPayment(id: number, _p: ActionState, fd: FormData): Pro
     amount,
     mode: str(fd.get("mode")) || "cash",
     reference: opt(fd.get("reference")),
-    paid_on: str(fd.get("paid_on")) || new Date().toISOString().slice(0, 10),
+    paid_on: str(fd.get("paid_on")) || todayISO(),
     notes: opt(fd.get("notes")),
   });
   if (error) return { error: friendlyDbError(error.message) };

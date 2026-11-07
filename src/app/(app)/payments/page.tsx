@@ -2,7 +2,7 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { Download } from "lucide-react";
 import { getHalls, getSession, can } from "@/lib/data";
-import { fmtDate, inr, todayISO } from "@/lib/format";
+import { fmtDate, inr, todayISO, localISO } from "@/lib/format";
 import { LABELS, type BookingFinancials, type BookingStatus, type Payment, type PaymentMode } from "@/lib/types";
 import { PageHeader } from "@/components/app/page-header";
 import { RangeFilters } from "@/components/app/filters";
@@ -18,7 +18,7 @@ export default async function PaymentsPage({ searchParams }: { searchParams: Pro
   if (!can(profile, "accounts")) redirect("/dashboard");
   const halls = await getHalls();
   const now = new Date();
-  const from = sp.from || new Date(now.getFullYear(), now.getMonth(), 1).toISOString().slice(0, 10);
+  const from = sp.from || localISO(new Date(now.getFullYear(), now.getMonth(), 1));
   const to = sp.to || todayISO();
   const hall = sp.hall || "";
 

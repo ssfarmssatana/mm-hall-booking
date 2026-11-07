@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { todayISO } from "@/lib/format";
 
 export const dynamic = "force-dynamic";
 export const maxDuration = 60;
@@ -25,7 +26,7 @@ export async function GET(request: Request) {
   const { data, error } = await admin.rpc("export_all");
   if (error) return NextResponse.json({ ok: false, error: error.message }, { status: 500 });
 
-  const name = `auto/${new Date().toISOString().slice(0, 10)}.json`;
+  const name = `auto/${todayISO()}.json`;
   const { error: upErr } = await admin.storage.from("backups").upload(name, JSON.stringify(data), { contentType: "application/json", upsert: true });
   if (upErr) return NextResponse.json({ ok: false, error: upErr.message }, { status: 500 });
 

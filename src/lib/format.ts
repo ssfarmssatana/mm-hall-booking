@@ -43,6 +43,11 @@ export function todayISO() {
   return format(new Date(), "yyyy-MM-dd");
 }
 
+/** yyyy-MM-dd in local time (never use toISOString().slice for dates – it shifts to UTC). */
+export function localISO(d: Date) {
+  return format(d, "yyyy-MM-dd");
+}
+
 /** Combine a yyyy-MM-dd date and HH:mm time (local) into an ISO string. */
 export function toISO(date: string, time: string) {
   return new Date(`${date}T${time || "00:00"}:00`).toISOString();

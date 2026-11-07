@@ -4,7 +4,7 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { z } from "zod";
 import { getSession } from "@/lib/data";
-import { toISO } from "@/lib/format";
+import { toISO, todayISO } from "@/lib/format";
 import { friendlyDbError } from "@/lib/errors";
 
 const str = (v: FormDataEntryValue | null) => (v == null ? "" : String(v).trim());
@@ -98,7 +98,7 @@ export async function addFollowup(id: number, _p: ActionState, fd: FormData): Pr
 
 export async function reopenEnquiry(id: number) {
   const { supabase } = await getSession();
-  await supabase.from("enquiries").update({ status: "follow_up", lost_reason: null, next_follow_up: new Date().toISOString().slice(0, 10) }).eq("id", id);
+  await supabase.from("enquiries").update({ status: "follow_up", lost_reason: null, next_follow_up: todayISO() }).eq("id", id);
   revalidatePath(`/enquiries/${id}`);
   revalidatePath("/enquiries");
 }

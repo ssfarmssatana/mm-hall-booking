@@ -8,7 +8,7 @@ import { Field, Input, Select, Textarea } from "@/components/ui/field";
 import { LOST_REASONS, type Enquiry, type Hall, type Profile } from "@/lib/types";
 import { EnquiryForm } from "../enquiry-form";
 import { addFollowup, convertEnquiry, reopenEnquiry, type ActionState } from "../actions";
-import { inr } from "@/lib/format";
+import { inr, localISO } from "@/lib/format";
 
 export function EnquiryDetailActions({ enquiry, halls, profiles, gstRate }: { enquiry: Enquiry; halls: Hall[]; profiles: Profile[]; gstRate: number }) {
   const [edit, setEdit] = useState(false);
@@ -51,7 +51,7 @@ function FollowupForm({ enquiry, onDone }: { enquiry: Enquiry; onDone: () => voi
     if (r?.ok) onDone();
     return r;
   }, null);
-  const [nextDate] = useState(() => new Date(Date.now() + 2 * 86400e3).toISOString().slice(0, 10));
+  const [nextDate] = useState(() => localISO(new Date(Date.now() + 2 * 86400e3)));
   return (
     <form action={action} className="space-y-3">
       <Field label="Note" required><Textarea name="note" rows={3} placeholder="e.g. Spoke to Mr. Patil, will confirm after discussing with family." required autoFocus /></Field>
